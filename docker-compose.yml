@@ -1,0 +1,13 @@
+version: "3.1"
+services:
+  auto_facebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /etc/localtime:/etc/localtime:ro
+    entrypoint: ['ping', 'google.com']
+    dns:
+      - 8.8.8.8
+    network_mode: host
