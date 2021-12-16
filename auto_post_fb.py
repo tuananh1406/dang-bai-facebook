@@ -35,7 +35,7 @@ def tam_ngung_va_tim(driver, _xpath):
     '''Hàm tạm ngưng đến khi xuất hiện đường dẫn xpath và chọn xpath đó
     '''
     tam_ngung_den_khi(driver, _xpath)
-    return driver.find_element_by_xpath(_xpath)
+    return driver.find_element(by='xpath', value=_xpath)
 
 
 def chay_trinh_duyet(headless=True):
@@ -65,11 +65,11 @@ def dang_nhap(_driver, url):
     _xpath_username = '//input[@id="email"]'
     _xpath_password = '//input[@id="pass"]'
     _xpath_login = '//button[@name="login"]'
-    _username = _driver.find_element_by_xpath(_xpath_username)
+    _username = _driver.find_element(by='xpath', value=_xpath_username)
     _username.send_keys(_ten_dang_nhap)
-    _password = _driver.find_element_by_xpath(_xpath_password)
+    _password = _driver.find_element(by='xpath', value=_xpath_password)
     _password.send_keys(_mat_khau)
-    _button = _driver.find_element_by_xpath(_xpath_login)
+    _button = _driver.find_element(by='xpath', value=_xpath_login)
     _button.click()
     return _driver
 
@@ -184,10 +184,11 @@ if __name__ == '__main__':
     url = 'https://www.facebook.com/'
     print('Chạy chương trình')
     thoi_gian_hien_tai = datetime.now()
-    driver = chay_trinh_duyet(headless=False)
+    # driver = chay_trinh_duyet(headless=False)
+    driver = chay_trinh_duyet()
     print('Tiến hành đăng nhập')
-    # driver = dang_nhap_bang_cookies(driver, 'tuananh.bak', url)
-    driver = dang_nhap_bang_cookies(driver, 'Nguyen Huu Tuan Anh.bak', url)
+    driver = dang_nhap_bang_cookies(driver, 'tuananh.bak', url)
+    # driver = dang_nhap_bang_cookies(driver, 'Nguyen Huu Tuan Anh.bak', url)
     noi_dung = lay_noi_dung('cham_ngon.txt')
     if thoi_gian_hien_tai.hour == 6:
         driver = auto_post(driver, noi_dung)
