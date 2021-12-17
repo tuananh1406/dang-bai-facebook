@@ -1,5 +1,5 @@
-ipython=="*"
-requests=="*"
-selenium=="*"
-webdriver-manager=="*"
-sentry-sdk=='*'
+ipython
+requests
+selenium
+webdriver-manager
+sentry-sdk

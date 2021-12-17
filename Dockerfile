@@ -31,6 +31,6 @@ WORKDIR /app
 
 RUN pip install --upgrade pip
 
-RUN pip install --upgrade selenium requests webdriver-manager ipython
+RUN pip install --upgrade -r requirements.txt
 
 CMD cron
