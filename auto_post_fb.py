@@ -11,17 +11,18 @@ from getpass import getpass
 from webdriver_manager.firefox import GeckoDriverManager
 
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 def tam_ngung_den_khi(driver, _xpath):
     '''Hàm tạm ngưng đến khi xuất hiện đường dẫn xpath
     '''
-    print('[INFO] Đang chờ trang web phản hồi...')
     _tam_ngung = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((
             By.XPATH,
@@ -43,23 +44,24 @@ def chay_trinh_duyet(headless=True):
     '''
     options = Options()
     options.headless = headless
+    service = Service(GeckoDriverManager().install())
     _driver = webdriver.Firefox(
-        # executable_path=_exec_driver_path,
         options=options,
-        executable_path=GeckoDriverManager().install(),
+        service=service,
     )
     # Hàm đặt thời gian tải trang, dùng khi tải trang quá lâu
     # _driver.set_page_load_timeout(5)
     return _driver
 
 
-def dang_nhap(_driver, url):
+def dang_nhap_facebook(_driver, url):
     '''Hàm đăng nhập facebook
     '''
     print('Lấy thông tin tài khoản')
     _ten_dang_nhap = input('Nhập tên đăng nhập: ')
     _mat_khau = getpass(prompt='Nhập mật khẩu: ')
-    # Mở trang facebook
+
+    # Mở trang
     _driver.get(url)
 
     _xpath_username = '//input[@id="email"]'
@@ -158,10 +160,12 @@ def auto_comment(driver, content):
         '//a[@data-sigil="feed-ufi-focus feed-ufi-trigger ufiCommentLink '
         'mufi-composer-focus"]')
     nut_binh_luan.click()
-    viet_binh_luan = driver.find_element(
-        by='xpath',
-        value='//textarea',
+    viet_binh_luan = tam_ngung_va_tim(
+        driver,
+        '//textarea',
     )
+    viet_binh_luan_act = ActionChains(driver).move_to_element(viet_binh_luan)
+    viet_binh_luan_act.perform()
     viet_binh_luan.send_keys(content)
     sleep(3)
     nut_dang = driver.find_element(
@@ -170,6 +174,7 @@ def auto_comment(driver, content):
     )
     sleep(3)
     nut_dang.click()
+    sleep(3)
     return driver
 
 
@@ -184,16 +189,17 @@ if __name__ == '__main__':
     url = 'https://www.facebook.com/'
     print('Chạy chương trình')
     thoi_gian_hien_tai = datetime.now()
-    # driver = chay_trinh_duyet(headless=False)
-    driver = chay_trinh_duyet()
+    driver = chay_trinh_duyet(headless=False)
+    # driver = chay_trinh_duyet()
     print('Tiến hành đăng nhập')
-    driver = dang_nhap_bang_cookies(driver, 'tuananh.bak', url)
-    # driver = dang_nhap_bang_cookies(driver, 'Nguyen Huu Tuan Anh.bak', url)
+    # driver = dang_nhap_bang_cookies(driver, 'tuananh.bak', url)
+    driver = dang_nhap_bang_cookies(driver, 'Nguyen Huu Tuan Anh.bak', url)
     noi_dung = lay_noi_dung('cham_ngon.txt')
     if thoi_gian_hien_tai.hour == 6:
         driver = auto_post(driver, noi_dung)
     if thoi_gian_hien_tai.hour == 14:
         driver = auto_comment(driver, noi_dung)
+    driver = auto_comment(driver, noi_dung)
     # driver = dang_nhap(driver)
     # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
     # print("Lưu cookies tài khoản")
@@ -202,4 +208,5 @@ if __name__ == '__main__':
     #     print('Tệp cookies được lưu tại: %s' % (duong_dan_tep_cookies))
     thoi_gian_xu_ly = datetime.now() - thoi_gian_hien_tai
     print('Thời gian xử lý:', thoi_gian_xu_ly)
+    input()
     driver.quit()
