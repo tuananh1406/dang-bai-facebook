@@ -242,13 +242,13 @@ if __name__ == '__main__':
     driver = None
 
     try:
-        headless = False
-        # headless = True
+        # headless = False
+        headless = True
         driver = chay_trinh_duyet(headless=headless)
         # driver = chay_trinh_duyet()
         logger.info('Tiến hành đăng nhập', extra=EXTRA)
-        cookies_path = 'tuananh.bak'
-        # cookies_path = 'Nguyen Huu Tuan Anh.bak'
+        # cookies_path = 'tuananh.bak'
+        cookies_path = 'Nguyen Huu Tuan Anh.bak'
         driver = dang_nhap_bang_cookies(driver, cookies_path, url)
         EXTRA['cookies_name'] = cookies_path
         noi_dung = lay_noi_dung('cham_ngon.txt')
@@ -257,7 +257,6 @@ if __name__ == '__main__':
             driver = auto_post(driver, noi_dung)
         if thoi_gian_hien_tai.hour == 14:
             driver = auto_comment(driver, noi_dung)
-        driver = auto_comment(driver, noi_dung)
         # driver = dang_nhap(driver)
         # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
         # print("Lưu cookies tài khoản")
