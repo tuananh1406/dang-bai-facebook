@@ -2,3 +2,4 @@ ipython=="*"
 requests=="*"
 selenium=="*"
 webdriver-manager=="*"
+sentry-sdk=='*'

@@ -5,6 +5,8 @@ import os
 import pickle
 import random
 import logging
+import sentry_sdk
+
 from datetime import datetime
 from time import sleep
 
@@ -14,7 +16,6 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
@@ -32,6 +33,12 @@ EXTRA = dict(cookies_name=None)
 
 
 def thiet_lap_logging(name):
+    sentry_sdk.init(
+        'https://2e084979867c4e8c83f0b3b8062afc5b@o1086935.'
+        'ingest.sentry.io/6111285',
+        traces_sample_rate=1.0
+    )
+
     log_format = ' - '.join([
         '%(asctime)s',
         '%(name)s',
