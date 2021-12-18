@@ -52,13 +52,13 @@ def thiet_lap_logging(name):
         mode='a',
         encoding='utf-8',
     )
+    file_handles.setFormatter(formatter)
 
     syslog = logging.StreamHandler()
     syslog.setFormatter(formatter)
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
-    logger.setFormatter(formatter)
     logger.addFilter(CustomLogFilter())
 
     logger.addHandler(syslog)
@@ -255,10 +255,9 @@ if __name__ == '__main__':
         # headless = False
         headless = True
         driver = chay_trinh_duyet(headless=headless)
-        # driver = chay_trinh_duyet()
         logger.info('Tiến hành đăng nhập', extra=EXTRA)
-        cookies_path = 'tuananh.bak'
-        # cookies_path = 'Nguyen Huu Tuan Anh.bak'
+        # cookies_path = 'tuananh.bak'
+        cookies_path = 'Nguyen Huu Tuan Anh.bak'
         driver = dang_nhap_bang_cookies(driver, cookies_path, url)
         EXTRA['cookies_name'] = cookies_path
         noi_dung = lay_noi_dung('cham_ngon.txt')
