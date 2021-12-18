@@ -290,6 +290,14 @@ if __name__ == '__main__':
             HEADLESS = True
 
         DRIVER = chay_trinh_duyet(headless=HEADLESS)
+        DRIVER.maximize_window()
+        SIZE = DRIVER.get_window_size()
+        DRIVER.set_window_size(SIZE['width'] / 2, SIZE['height'])
+        DRIVER.set_window_position(
+            SIZE['width'] / 2,
+            SIZE['height'] / 2,
+            windowHandle='current',
+        )
         LOGGER.info('Tiến hành đăng nhập', extra=EXTRA)
         DRIVER = dang_nhap_bang_cookies(DRIVER, COOKIES_PATH, URL)
         EXTRA['cookies_name'] = COOKIES_PATH
@@ -297,12 +305,13 @@ if __name__ == '__main__':
         LOGGER.info('Lấy nội dung: %s', NOI_DUNG, extra=EXTRA)
         if THOI_GIAN_HIEN_TAI.hour == 6:
             DRIVER = auto_post(DRIVER, NOI_DUNG)
+            DRIVER = auto_like(DRIVER)
         if THOI_GIAN_HIEN_TAI.hour == 14:
             DRIVER = auto_comment(DRIVER, NOI_DUNG)
-        if TESTING:
-            DRIVER = auto_post(DRIVER, NOI_DUNG)
-            DRIVER = auto_like(DRIVER)
-            DRIVER = auto_comment(DRIVER, NOI_DUNG)
+        # if TESTING:
+        #     DRIVER = auto_post(DRIVER, NOI_DUNG)
+        #     DRIVER = auto_like(DRIVER)
+        #     DRIVER = auto_comment(DRIVER, NOI_DUNG)
         # driver = dang_nhap(driver)
         # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
         # print("Lưu cookies tài khoản")
