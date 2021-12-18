@@ -246,7 +246,8 @@ def lay_noi_dung(tep_noi_dung):
 
 if __name__ == '__main__':
     url = 'https://www.facebook.com/'
-    logger = thiet_lap_logging(__name__)
+    name = 'auto_post_fb.py'
+    logger = thiet_lap_logging(name)
     logger.info('Chạy chương trình', extra=EXTRA)
     thoi_gian_hien_tai = datetime.now()
     driver = None
