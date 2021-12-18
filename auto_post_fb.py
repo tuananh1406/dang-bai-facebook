@@ -5,12 +5,12 @@ import os
 import pickle
 import random
 import logging
-import sentry_sdk
 
 from datetime import datetime
 from time import sleep
 
 from getpass import getpass
+import sentry_sdk
 from webdriver_manager.firefox import GeckoDriverManager
 
 from selenium import webdriver
@@ -36,7 +36,7 @@ def thiet_lap_logging(name):
     sentry_sdk.init(
         'https://2e084979867c4e8c83f0b3b8062afc5b@o1086935.'
         'ingest.sentry.io/6111285',
-        traces_sample_rate=1.0
+        traces_sample_rate=1.0,
     )
 
     log_format = ' - '.join([
@@ -46,9 +46,15 @@ def thiet_lap_logging(name):
         '%(cookies_name)s',
         '%(message)s',
     ])
+    file_handles = logging.FileHandler(
+        filename='logs.txt',
+        mode='a',
+        encoding='utf-8',
+    )
 
     logger = logging.getLogger(name)
     logger.addFilter(CustomLogFilter())
+    logger.addHandler(file_handles)
     syslog = logging.StreamHandler()
     formatter = logging.Formatter(log_format)
     syslog.setFormatter(formatter)
