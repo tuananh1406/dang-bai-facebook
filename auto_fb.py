@@ -25,7 +25,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 class CustomLogFilter(logging.Filter):
     def filter(self, record):
         if not hasattr(record, 'cookies_name'):
-            record.cookies_name = None
+            record.cookies_name = EXTRA.get('cookies_name')
         return True
 
 
@@ -96,7 +96,7 @@ def chay_trinh_duyet(headless=True):
     options = Options()
     options.headless = headless
     service = Service(GeckoDriverManager().install())
-    LOGGER.info('Chạy trình duyệt, headless=%s', headless, extra=EXTRA)
+    LOGGER.info('Chạy trình duyệt, headless=%s', headless)
     _driver = webdriver.Firefox(
         options=options,
         service=service,
@@ -131,7 +131,7 @@ def dang_nhap_facebook(_driver, url):
 def dang_nhap_bang_cookies(_driver, _duong_dan_tep_cookie, url):
     '''Hàm đăng nhập facebook bằng cookies
     '''
-    LOGGER.info('Đăng nhập %s bằng cookies', url, extra=EXTRA)
+    LOGGER.info('Đăng nhập %s bằng cookies', url)
     _driver.get(url)
     with open(_duong_dan_tep_cookie, 'rb') as _tep_cookie:
         for value in pickle.load(_tep_cookie):
@@ -179,19 +179,19 @@ def auto_post(driver, content):
         'P/s: Đây là bài tự đăng nhá mọi người.',
     ])
     url = 'https://m.facebook.com'
-    LOGGER.info('Tự động đăng bài %s', url, extra=EXTRA)
+    LOGGER.info('Tự động đăng bài %s', url)
     driver.get(url)
-    LOGGER.info('Chọn nút đăng bài mới', extra=EXTRA)
+    LOGGER.info('Chọn nút đăng bài mới')
     post_area = tam_ngung_va_tim(
         driver,
         '//div[@class="_4g34 _6ber _78cq _7cdk _5i2i _52we"]')
     post_area.click()
-    LOGGER.info('Nhập nội dung bài', extra=EXTRA)
+    LOGGER.info('Nhập nội dung bài')
     input_post_area = tam_ngung_va_tim(
         driver,
         '//textarea[@id="uniqid_1"]')
     input_post_area.send_keys(content)
-    LOGGER.info('Đăng bài', extra=EXTRA)
+    LOGGER.info('Đăng bài')
     post_button = driver.find_elements(
         by='xpath',
         value='//button[@type="submit" and '
@@ -201,15 +201,15 @@ def auto_post(driver, content):
 
 
 def auto_like(driver):
-    LOGGER.info('Tự động thích bài viết', extra=EXTRA)
+    LOGGER.info('Tự động thích bài viết')
     url = 'https://m.facebook.com/profile.php'
     driver.get(url)
-    LOGGER.info('Lấy danh sách bài đăng', extra=EXTRA)
+    LOGGER.info('Lấy danh sách bài đăng')
     list_post = driver.find_elements(
         by='xpath',
         value='//article',
     )
-    LOGGER.info('Chọn bài mới nhất', extra=EXTRA)
+    LOGGER.info('Chọn bài mới nhất')
     bai_moi_nhat = list_post[0]
     bai_moi_nhat.click()
     LOGGER.info('Ấn nút thích')
@@ -223,28 +223,28 @@ def auto_like(driver):
 
 
 def auto_comment(driver, content):
-    LOGGER.info('Tự động đăng bình luận', extra=EXTRA)
+    LOGGER.info('Tự động đăng bình luận')
     content = '\n'.join([
         '[Tự bình luận]',
         content.strip('\n'),
     ])
     url = 'https://m.facebook.com/profile.php'
     driver.get(url)
-    LOGGER.info('Lấy danh sách bài đăng', extra=EXTRA)
+    LOGGER.info('Lấy danh sách bài đăng')
     list_post = driver.find_elements(
         by='xpath',
         value='//article',
     )
-    LOGGER.info('Chọn bài mới nhất', extra=EXTRA)
+    LOGGER.info('Chọn bài mới nhất')
     bai_moi_nhat = list_post[0]
     bai_moi_nhat.click()
-    LOGGER.info('Ấn nút bình luận', extra=EXTRA)
+    LOGGER.info('Ấn nút bình luận')
     nut_binh_luan = tam_ngung_va_tim(
         driver,
         '//a[@data-sigil="feed-ufi-focus feed-ufi-trigger ufiCommentLink '
         'mufi-composer-focus"]')
     nut_binh_luan.click()
-    LOGGER.info('Viết bình luận', extra=EXTRA)
+    LOGGER.info('Viết bình luận')
     viet_binh_luan = tam_ngung_va_tim(
         driver,
         '//textarea',
@@ -253,7 +253,7 @@ def auto_comment(driver, content):
     viet_binh_luan_act.perform()
     viet_binh_luan.send_keys(content)
     sleep(3)
-    LOGGER.info('Đăng bình luận', extra=EXTRA)
+    LOGGER.info('Đăng bình luận')
     nut_dang = driver.find_element(
         by='xpath',
         value='//button[@data-sigil="touchable composer-submit"]',
@@ -273,7 +273,7 @@ def lay_noi_dung(tep_noi_dung):
 
 if __name__ == '__main__':
     LOGGER = thiet_lap_logging(NAME)
-    LOGGER.info('Chạy chương trình', extra=EXTRA)
+    LOGGER.info('Chạy chương trình')
     THOI_GIAN_HIEN_TAI = datetime.now()
     DRIVER = None
 
@@ -288,6 +288,7 @@ if __name__ == '__main__':
         else:
             COOKIES_PATH = 'tuananh.bak'
             HEADLESS = True
+        EXTRA['cookies_name'] = COOKIES_PATH
 
         DRIVER = chay_trinh_duyet(headless=HEADLESS)
         DRIVER.maximize_window()
@@ -298,11 +299,10 @@ if __name__ == '__main__':
             0,
             windowHandle='current',
         )
-        LOGGER.info('Tiến hành đăng nhập', extra=EXTRA)
+        LOGGER.info('Tiến hành đăng nhập')
         DRIVER = dang_nhap_bang_cookies(DRIVER, COOKIES_PATH, URL)
-        EXTRA['cookies_name'] = COOKIES_PATH
         NOI_DUNG = lay_noi_dung('cham_ngon.txt')
-        LOGGER.info('Lấy nội dung: %s', NOI_DUNG, extra=EXTRA)
+        LOGGER.info('Lấy nội dung: %s', NOI_DUNG)
         if THOI_GIAN_HIEN_TAI.hour == 6:
             DRIVER = auto_post(DRIVER, NOI_DUNG)
             DRIVER = auto_like(DRIVER)
@@ -319,7 +319,7 @@ if __name__ == '__main__':
         # if duong_dan_tep_cookies:
         #     print('Tệp cookies được lưu tại: %s' % (duong_dan_tep_cookies))
         THOI_GIAN_XU_LY = datetime.now() - THOI_GIAN_HIEN_TAI
-        LOGGER.info('Thời gian xử lý: %s', THOI_GIAN_XU_LY, extra=EXTRA)
+        LOGGER.info('Thời gian xử lý: %s', THOI_GIAN_XU_LY)
         if TESTING:
             input("Ấn Enter để thoát: ")
     except Exception as error:
