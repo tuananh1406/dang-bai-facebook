@@ -308,10 +308,10 @@ if __name__ == '__main__':
             DRIVER = auto_like(DRIVER)
         if THOI_GIAN_HIEN_TAI.hour == 14:
             DRIVER = auto_comment(DRIVER, NOI_DUNG)
-        # if TESTING:
-        #     DRIVER = auto_post(DRIVER, NOI_DUNG)
-        #     DRIVER = auto_like(DRIVER)
-        #     DRIVER = auto_comment(DRIVER, NOI_DUNG)
+        if TESTING:
+            DRIVER = auto_post(DRIVER, NOI_DUNG)
+            DRIVER = auto_like(DRIVER)
+            DRIVER = auto_comment(DRIVER, NOI_DUNG)
         # driver = dang_nhap(driver)
         # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
         # print("Lưu cookies tài khoản")
