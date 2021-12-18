@@ -32,7 +32,7 @@ class CustomLogFilter(logging.Filter):
 EXTRA = dict(cookies_name=None)
 TESTING = None
 URL = 'https://www.facebook.com/'
-NAME = 'auto_post_fb.py'
+NAME = 'auto_fb'
 
 
 def thiet_lap_logging(name):
