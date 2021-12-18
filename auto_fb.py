@@ -294,8 +294,8 @@ if __name__ == '__main__':
         SIZE = DRIVER.get_window_size()
         DRIVER.set_window_size(SIZE['width'] / 2, SIZE['height'])
         DRIVER.set_window_position(
-            SIZE['width'] / 2,
-            SIZE['height'] / 2,
+            (SIZE['width'] / 2) + SIZE['width'],
+            0,
             windowHandle='current',
         )
         LOGGER.info('Tiến hành đăng nhập', extra=EXTRA)
