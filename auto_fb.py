@@ -86,7 +86,6 @@ def tam_ngung_den_khi(driver, _xpath):
 def tam_ngung_va_tim(driver, _xpath):
     '''Hàm tạm ngưng đến khi xuất hiện đường dẫn xpath và chọn xpath đó
     '''
-    LOGGER.info('Tạm dừng đến khi thấy xpath: "%s"', _xpath)
     tam_ngung_den_khi(driver, _xpath)
     return driver.find_element(by='xpath', value=_xpath)
 
@@ -312,7 +311,8 @@ if __name__ == '__main__':
         #     print('Tệp cookies được lưu tại: %s' % (duong_dan_tep_cookies))
         THOI_GIAN_XU_LY = datetime.now() - THOI_GIAN_HIEN_TAI
         LOGGER.info('Thời gian xử lý: %s', THOI_GIAN_XU_LY, extra=EXTRA)
-        input()
+        if TESTING:
+            input("Ấn Enter để thoát: ")
     except Exception as error:
         LOGGER.exception(error)
     finally:
