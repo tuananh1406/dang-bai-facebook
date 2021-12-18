@@ -257,8 +257,8 @@ if __name__ == '__main__':
         headless = True
         driver = chay_trinh_duyet(headless=headless)
         logger.info('Tiến hành đăng nhập', extra=EXTRA)
-        # cookies_path = 'tuananh.bak'
-        cookies_path = 'Nguyen Huu Tuan Anh.bak'
+        cookies_path = 'tuananh.bak'
+        # cookies_path = 'Nguyen Huu Tuan Anh.bak'
         driver = dang_nhap_bang_cookies(driver, cookies_path, url)
         EXTRA['cookies_name'] = cookies_path
         noi_dung = lay_noi_dung('cham_ngon.txt')
