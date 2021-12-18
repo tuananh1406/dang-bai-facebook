@@ -46,20 +46,24 @@ def thiet_lap_logging(name):
         '%(cookies_name)s',
         '%(message)s',
     ])
+    formatter = logging.Formatter(log_format)
     file_handles = logging.FileHandler(
         filename='logs.txt',
         mode='a',
         encoding='utf-8',
     )
 
-    logger = logging.getLogger(name)
-    logger.addFilter(CustomLogFilter())
-    logger.addHandler(file_handles)
     syslog = logging.StreamHandler()
-    formatter = logging.Formatter(log_format)
     syslog.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
+    logger.setFormatter(formatter)
+    logger.addFilter(CustomLogFilter())
+
     logger.addHandler(syslog)
+    logger.addHandler(file_handles)
+
     return logger
 
 
