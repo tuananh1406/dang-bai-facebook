@@ -30,6 +30,9 @@ class CustomLogFilter(logging.Filter):
 
 
 EXTRA = dict(cookies_name=None)
+TESTING = None
+URL = 'https://www.facebook.com/'
+NAME = 'auto_post_fb.py'
 
 
 def thiet_lap_logging(name):
@@ -62,7 +65,8 @@ def thiet_lap_logging(name):
     logger.addFilter(CustomLogFilter())
 
     logger.addHandler(syslog)
-    logger.addHandler(file_handles)
+    if not TESTING:
+        logger.addHandler(file_handles)
 
     return logger
 
@@ -82,6 +86,7 @@ def tam_ngung_den_khi(driver, _xpath):
 def tam_ngung_va_tim(driver, _xpath):
     '''Hàm tạm ngưng đến khi xuất hiện đường dẫn xpath và chọn xpath đó
     '''
+    LOGGER.info('Tạm dừng đến khi thấy xpath: "%s"', _xpath)
     tam_ngung_den_khi(driver, _xpath)
     return driver.find_element(by='xpath', value=_xpath)
 
@@ -92,7 +97,7 @@ def chay_trinh_duyet(headless=True):
     options = Options()
     options.headless = headless
     service = Service(GeckoDriverManager().install())
-    logger.info(f'Chạy trình duyệt, headless={headless}', extra=EXTRA)
+    LOGGER.info('Chạy trình duyệt, headless=%s', headless, extra=EXTRA)
     _driver = webdriver.Firefox(
         options=options,
         service=service,
@@ -127,12 +132,13 @@ def dang_nhap_facebook(_driver, url):
 def dang_nhap_bang_cookies(_driver, _duong_dan_tep_cookie, url):
     '''Hàm đăng nhập facebook bằng cookies
     '''
-    logger.info(f'Đăng nhập {url} bằng cookies', extra=EXTRA)
+    LOGGER.info('Đăng nhập %s bằng cookies', url, extra=EXTRA)
     _driver.get(url)
-    for value in pickle.load(open(_duong_dan_tep_cookie, 'rb')):
-        if 'expiry' in value:
-            del value['expiry']
-        _driver.add_cookie(value)
+    with open(_duong_dan_tep_cookie, 'rb') as _tep_cookie:
+        for value in pickle.load(_tep_cookie):
+            if 'expiry' in value:
+                del value['expiry']
+            _driver.add_cookie(value)
 
     # Tải lại trang để lấy cookies
     _driver.get(url)
@@ -146,7 +152,7 @@ def luu_cookies(_driver, _ten_tep_cookie=None):
     if _ten_tep_cookie is None:
         # Nếu không chỉ định tên thì lấy tên người dùng để lưu
         _link_facebook_ca_nhan = 'https://www.facebook.com/me'
-        driver.get(_link_facebook_ca_nhan)
+        _driver.get(_link_facebook_ca_nhan)
         _xpath_ten_nguoi_dung = '//h1[@class="gmql0nx0 l94mrbxd p1ri9a11 '\
             'lzcic4wl bp9cbjyn j83agx80"]'
         _ten_nguoi_dung = _driver.find_element(
@@ -174,19 +180,19 @@ def auto_post(driver, content):
         'P/s: Đây là bài tự đăng nhá mọi người.',
     ])
     url = 'https://m.facebook.com'
-    logger.info(f'Tự động đăng bài {url}', extra=EXTRA)
+    LOGGER.info('Tự động đăng bài %s', url, extra=EXTRA)
     driver.get(url)
-    logger.info('Chọn nút đăng bài mới', extra=EXTRA)
+    LOGGER.info('Chọn nút đăng bài mới', extra=EXTRA)
     post_area = tam_ngung_va_tim(
         driver,
         '//div[@class="_4g34 _6ber _78cq _7cdk _5i2i _52we"]')
     post_area.click()
-    logger.info('Nhập nội dung bài', extra=EXTRA)
+    LOGGER.info('Nhập nội dung bài', extra=EXTRA)
     input_post_area = tam_ngung_va_tim(
         driver,
         '//textarea[@id="uniqid_1"]')
     input_post_area.send_keys(content)
-    logger.info('Đăng bài', extra=EXTRA)
+    LOGGER.info('Đăng bài', extra=EXTRA)
     post_button = driver.find_elements(
         by='xpath',
         value='//button[@type="submit" and '
@@ -195,29 +201,51 @@ def auto_post(driver, content):
     return driver
 
 
+def auto_like(driver):
+    LOGGER.info('Tự động thích bài viết', extra=EXTRA)
+    url = 'https://m.facebook.com/profile.php'
+    driver.get(url)
+    LOGGER.info('Lấy danh sách bài đăng', extra=EXTRA)
+    list_post = driver.find_elements(
+        by='xpath',
+        value='//article',
+    )
+    LOGGER.info('Chọn bài mới nhất', extra=EXTRA)
+    bai_moi_nhat = list_post[0]
+    bai_moi_nhat.click()
+    LOGGER.info('Ấn nút thích')
+    nut_thich = tam_ngung_va_tim(
+        driver=driver,
+        _xpath='//a[@data-sigil="touchable ufi-inline-like '
+        'like-reaction-flyout"]',
+    )
+    nut_thich.click()
+    return driver
+
+
 def auto_comment(driver, content):
-    logger.info('Tự động đăng bình luận', extra=EXTRA)
+    LOGGER.info('Tự động đăng bình luận', extra=EXTRA)
     content = '\n'.join([
         '[Tự bình luận]',
         content.strip('\n'),
     ])
     url = 'https://m.facebook.com/profile.php'
     driver.get(url)
-    logger.info('Lấy danh sách bài đăng', extra=EXTRA)
+    LOGGER.info('Lấy danh sách bài đăng', extra=EXTRA)
     list_post = driver.find_elements(
         by='xpath',
         value='//article',
     )
-    logger.info('Chọn bài mới nhất', extra=EXTRA)
+    LOGGER.info('Chọn bài mới nhất', extra=EXTRA)
     bai_moi_nhat = list_post[0]
     bai_moi_nhat.click()
-    logger.info('Ấn nút bình luận', extra=EXTRA)
+    LOGGER.info('Ấn nút bình luận', extra=EXTRA)
     nut_binh_luan = tam_ngung_va_tim(
         driver,
         '//a[@data-sigil="feed-ufi-focus feed-ufi-trigger ufiCommentLink '
         'mufi-composer-focus"]')
     nut_binh_luan.click()
-    logger.info('Viết bình luận', extra=EXTRA)
+    LOGGER.info('Viết bình luận', extra=EXTRA)
     viet_binh_luan = tam_ngung_va_tim(
         driver,
         '//textarea',
@@ -226,7 +254,7 @@ def auto_comment(driver, content):
     viet_binh_luan_act.perform()
     viet_binh_luan.send_keys(content)
     sleep(3)
-    logger.info('Đăng bình luận', extra=EXTRA)
+    LOGGER.info('Đăng bình luận', extra=EXTRA)
     nut_dang = driver.find_element(
         by='xpath',
         value='//button[@data-sigil="touchable composer-submit"]',
@@ -245,38 +273,48 @@ def lay_noi_dung(tep_noi_dung):
 
 
 if __name__ == '__main__':
-    url = 'https://www.facebook.com/'
-    name = 'auto_post_fb.py'
-    logger = thiet_lap_logging(name)
-    logger.info('Chạy chương trình', extra=EXTRA)
-    thoi_gian_hien_tai = datetime.now()
-    driver = None
+    LOGGER = thiet_lap_logging(NAME)
+    LOGGER.info('Chạy chương trình', extra=EXTRA)
+    THOI_GIAN_HIEN_TAI = datetime.now()
+    DRIVER = None
 
     try:
-        # headless = False
-        headless = True
-        driver = chay_trinh_duyet(headless=headless)
-        logger.info('Tiến hành đăng nhập', extra=EXTRA)
-        cookies_path = 'tuananh.bak'
-        # cookies_path = 'Nguyen Huu Tuan Anh.bak'
-        driver = dang_nhap_bang_cookies(driver, cookies_path, url)
-        EXTRA['cookies_name'] = cookies_path
-        noi_dung = lay_noi_dung('cham_ngon.txt')
-        logger.info(f'Lấy nội dung: {noi_dung}', extra=EXTRA)
-        if thoi_gian_hien_tai.hour == 6:
-            driver = auto_post(driver, noi_dung)
-        if thoi_gian_hien_tai.hour == 14:
-            driver = auto_comment(driver, noi_dung)
+        TESTING = True
+        if TESTING:
+            LOGGER.info('*' * 50)
+            LOGGER.info('Chạy thử tự động facebook')
+            LOGGER.info('*' * 50)
+            HEADLESS = False
+            COOKIES_PATH = 'Nguyen Huu Tuan Anh.bak'
+        else:
+            COOKIES_PATH = 'tuananh.bak'
+            HEADLESS = True
+
+        DRIVER = chay_trinh_duyet(headless=HEADLESS)
+        LOGGER.info('Tiến hành đăng nhập', extra=EXTRA)
+        DRIVER = dang_nhap_bang_cookies(DRIVER, COOKIES_PATH, URL)
+        EXTRA['cookies_name'] = COOKIES_PATH
+        NOI_DUNG = lay_noi_dung('cham_ngon.txt')
+        LOGGER.info('Lấy nội dung: %s', NOI_DUNG, extra=EXTRA)
+        if THOI_GIAN_HIEN_TAI.hour == 6:
+            DRIVER = auto_post(DRIVER, NOI_DUNG)
+        if THOI_GIAN_HIEN_TAI.hour == 14:
+            DRIVER = auto_comment(DRIVER, NOI_DUNG)
+        if TESTING:
+            DRIVER = auto_post(DRIVER, NOI_DUNG)
+            DRIVER = auto_like(DRIVER)
+            DRIVER = auto_comment(DRIVER, NOI_DUNG)
         # driver = dang_nhap(driver)
         # link_danh_sach_ban_be = 'https://www.facebook.com/me/friends'
         # print("Lưu cookies tài khoản")
         # duong_dan_tep_cookies = luu_cookies(driver)
         # if duong_dan_tep_cookies:
         #     print('Tệp cookies được lưu tại: %s' % (duong_dan_tep_cookies))
-        thoi_gian_xu_ly = datetime.now() - thoi_gian_hien_tai
-        logger.info(f'Thời gian xử lý: {thoi_gian_xu_ly}', extra=EXTRA)
+        THOI_GIAN_XU_LY = datetime.now() - THOI_GIAN_HIEN_TAI
+        LOGGER.info('Thời gian xử lý: %s', THOI_GIAN_XU_LY, extra=EXTRA)
+        input()
     except Exception as error:
-        logger.error(error)
+        LOGGER.exception(error)
     finally:
-        if driver:
-            driver.quit()
+        if DRIVER:
+            DRIVER.quit()
