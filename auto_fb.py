@@ -305,8 +305,8 @@ if __name__ == '__main__':
         LOGGER.info('Lấy nội dung: %s', NOI_DUNG)
         if THOI_GIAN_HIEN_TAI.hour == 6:
             DRIVER = auto_post(DRIVER, NOI_DUNG)
-            DRIVER = auto_like(DRIVER)
         if THOI_GIAN_HIEN_TAI.hour == 14:
+            DRIVER = auto_like(DRIVER)
             DRIVER = auto_comment(DRIVER, NOI_DUNG)
         if TESTING:
             DRIVER = auto_post(DRIVER, NOI_DUNG)
