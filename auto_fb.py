@@ -280,8 +280,8 @@ if __name__ == '__main__':
     LOGGER.info('Load config')
     CONFIG = ConfigParser()
     CONFIG.read('tele.conf')
-    BOT_TELE = CONFIG.get('BOT_TELE')
-    CHAT_ID = CONFIG.get('CHAT_ID')
+    BOT_TELE = CONFIG.get('config', 'BOT_TELE')
+    CHAT_ID = CONFIG.get('config', 'CHAT_ID')
 
     THOI_GIAN_HIEN_TAI = datetime.now()
     LOGGER.info('Gửi thông báo qua telegram')
