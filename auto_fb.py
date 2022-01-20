@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 # coding: utf-8
 '''Tự động đăng nhập facebook
 '''

@@ -25,12 +25,12 @@ RUN set -x \
 
 COPY . /app
 
-RUN chmod 0644 /app/auto_cron && crontab /app/auto_cron
+RUN chmod 0644 /app/cron_conf && crontab /app/cron_conf
 
 WORKDIR /app
 
 RUN pip install --upgrade pip
 
-RUN pip install --upgrade -r requirements.txt
+RUN pip install -r requirements.txt
 
-CMD cron
+CMD ['cron', '-f']
