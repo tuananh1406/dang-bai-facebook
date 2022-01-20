@@ -3,3 +3,4 @@ tags
 *.swp
 *.log
 logs.txt
+*.conf
