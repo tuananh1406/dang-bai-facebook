@@ -276,18 +276,21 @@ def lay_noi_dung(tep_noi_dung):
 if __name__ == '__main__':
     LOGGER = thiet_lap_logging(NAME)
     LOGGER.info('Chạy chương trình')
+
     LOGGER.info('Load config')
     CONFIG = ConfigParser()
     CONFIG.read('tele.conf')
     BOT_TELE = CONFIG.get('BOT_TELE')
     CHAT_ID = CONFIG.get('CHAT_ID')
+
+    THOI_GIAN_HIEN_TAI = datetime.now()
     LOGGER.info('Gửi thông báo qua telegram')
     url = f'https://api.telegram.org/bot{BOT_TELE}/sendMessage'
     params = {
         'chat_id': CHAT_ID,
-        'text': 'Chạy auto facebook',
+        'text': f'Chạy auto facebook: {THOI_GIAN_HIEN_TAI}',
     }
-    THOI_GIAN_HIEN_TAI = datetime.now()
+    requests.post(url=url, data=params)
     DRIVER = None
 
     try:
