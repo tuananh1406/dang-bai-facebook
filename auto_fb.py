@@ -13,6 +13,7 @@ import requests
 from getpass import getpass
 import sentry_sdk
 from webdriver_manager.firefox import GeckoDriverManager
+from configparser import ConfigParser
 
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -34,7 +35,6 @@ EXTRA = dict(cookies_name=None)
 TESTING = None
 URL = 'https://www.facebook.com/'
 NAME = 'auto_fb'
-BOT_TELE = os.environ.get('BOT_TELE')
 
 
 def thiet_lap_logging(name):
@@ -276,10 +276,15 @@ def lay_noi_dung(tep_noi_dung):
 if __name__ == '__main__':
     LOGGER = thiet_lap_logging(NAME)
     LOGGER.info('Chạy chương trình')
+    LOGGER.info('Load config')
+    CONFIG = ConfigParser()
+    CONFIG.read('tele.conf')
+    BOT_TELE = CONFIG.get('BOT_TELE')
+    CHAT_ID = CONFIG.get('CHAT_ID')
     LOGGER.info('Gửi thông báo qua telegram')
     url = f'https://api.telegram.org/bot{BOT_TELE}/sendMessage'
     params = {
-        'chat_id': 1107739626,
+        'chat_id': CHAT_ID,
         'text': 'Chạy auto facebook',
     }
     THOI_GIAN_HIEN_TAI = datetime.now()
