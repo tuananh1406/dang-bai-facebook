@@ -8,6 +8,7 @@ import logging
 
 from datetime import datetime
 from time import sleep
+import requests
 
 from getpass import getpass
 import sentry_sdk
@@ -33,6 +34,7 @@ EXTRA = dict(cookies_name=None)
 TESTING = None
 URL = 'https://www.facebook.com/'
 NAME = 'auto_fb'
+BOT_TELE = os.environ.get('BOT_TELE')
 
 
 def thiet_lap_logging(name):
@@ -274,11 +276,17 @@ def lay_noi_dung(tep_noi_dung):
 if __name__ == '__main__':
     LOGGER = thiet_lap_logging(NAME)
     LOGGER.info('Chạy chương trình')
+    LOGGER.info('Gửi thông báo qua telegram')
+    url = f'https://api.telegram.org/bot{BOT_TELE}/sendMessage'
+    params = {
+        'chat_id': 1107739626,
+        'text': 'Chạy auto facebook',
+    }
     THOI_GIAN_HIEN_TAI = datetime.now()
     DRIVER = None
 
     try:
-        TESTING = True
+        # TESTING = True
         if TESTING:
             LOGGER.info('*' * 50)
             LOGGER.info('Chạy thử tự động facebook')
